@@ -31,6 +31,10 @@ const err = [
   ["FEE_TOO_HIGH", {
     giveup: false,
     alert: false
+  }],
+  ["BAD_NODE", {
+    giveup : true,
+    alert:false
   }]
 ]
 

@@ -25,6 +25,7 @@
   },
   "public_uri": "http://localhost:4000",
   "node_whitelist": [],
+  "node_blacklist":[],
   "ip_block_countries":[]
 }
 

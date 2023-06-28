@@ -12,6 +12,7 @@ console.log('Starting Channel Opener...')
 
 const MAX_CHANNEL_OPEN_ATTEMPT = config.constants.max_attempt_channel_open
 const MAX_CHAN_FEE = 200
+const blacklist = config.node_blacklist || []
 
 Db((err) => {
   if (err) throw err
@@ -151,6 +152,12 @@ function channelOpener () {
     }
     
     if(chanOpenConfig.fee_rate >= MAX_CHAN_FEE) return cb(chanErrors.FEE_TOO_HIGH(["FEE IS HIGHER THAN "+MAX_CHAN_FEE]))
+
+    if(blacklist.includes(chanOpenConfig.remote_pub_key.toLowerCase()) {
+      alert('warn',`Not opening channel to blacklisted node:\nOrder:${order._id}\n${chanOpenConfig.remote_pub_key}`)
+      res.result = { error : chanErrors.BAD_NODE([`node: ${chanOpenConfig.remote_pub_key}`, ])}
+      return cb(null, res) 
+    }
 
 
     console.log(`Opening LN Channel to: ${JSON.stringify(chanOpenConfig,null,2)}`)
