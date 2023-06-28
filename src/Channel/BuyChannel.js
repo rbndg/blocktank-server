@@ -93,7 +93,7 @@ class BuyChannel extends Worker {
       return cb(null, this.errRes(orderErr))
     }
 
-    if (!order.product_id) {
+    if (!order.product_id || order.local_balance <= 0 || order.remote_balance < 0 || channel_expiry <= 0) {
       return cb(null, this.errRes('Invalid params'))
     }
 

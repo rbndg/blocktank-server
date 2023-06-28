@@ -33,7 +33,7 @@ async function getProducts (productIds) {
 
 async function updateOrders (orders) {
   
-  const logInfo = []
+  const log = []
   
   const update = await Promise.all(orders.map(async ({ order, result }) => {
     result.ts = Date.now()

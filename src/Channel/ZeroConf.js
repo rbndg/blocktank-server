@@ -111,6 +111,7 @@ async function main () {
     const orders = await getOrders(ORDER_STATES.CREATED)
     console.log(`Pending orders: ${orders.length}`)
     const address = orders
+      .filter((tx) => tx.remote_balance === 0 )
       .map((tx) => [tx.btc_address, tx.zero_conf_satvbyte] )
       .filter(Boolean)
     const mempoolTx = await zcWorker._getMempoolTx({ address })
