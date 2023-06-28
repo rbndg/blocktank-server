@@ -119,11 +119,9 @@ class BuyChannel extends Worker {
 
     const totalCapacity = new BN(order.local_balance).plus(order.remote_balance).toString()
 
-    if(totalCapacity)
-
     // Fee: How much the service is charging for channel opening
     // totalAmount: Total amount including local balance and remote balance charges
-    let price, totalAmount
+    let price, totalAmount;
     try {
       const p = await getChannelPrice({
         channel_expiry: order.channel_expiry,
