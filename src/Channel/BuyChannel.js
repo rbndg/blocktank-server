@@ -12,6 +12,8 @@ const config = require('../../config/server.json')
 const { constants } = config
 const { public_uri: publicUri, db_url: dbURL } = config
 
+const userAgents = ['Bitkit', 'Bitfinex']
+
 class BuyChannel extends Worker {
   constructor (config) {
     config.name = 'svc:buy_channel'
@@ -197,8 +199,8 @@ class BuyChannel extends Worker {
         return cb(null, this.errRes())
       }
 
-      if(options.user_agent === "Bitkit") {
-        this.alertSlack("info", `New order from Bitkit: ${data.order_id}`)
+      if(userAgents.includes(options.user_agent)) {
+        this.alertSlack("info", `New order from ${options.user_agent}: ${data.order_id}`)
       }
 
       cb(null, data)
