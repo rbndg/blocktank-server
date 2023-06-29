@@ -153,7 +153,7 @@ function channelOpener () {
     
     if(chanOpenConfig.fee_rate >= MAX_CHAN_FEE) return cb(chanErrors.FEE_TOO_HIGH(["FEE IS HIGHER THAN "+MAX_CHAN_FEE]))
 
-    if(blacklist.includes(chanOpenConfig.remote_pub_key.toLowerCase()) {
+    if(blacklist.includes(chanOpenConfig.remote_pub_key.toLowerCase())) {
       alert('warn',`Not opening channel to blacklisted node:\nOrder:${order._id}\n${chanOpenConfig.remote_pub_key}`)
       res.result = { error : chanErrors.BAD_NODE([`node: ${chanOpenConfig.remote_pub_key}`, ])}
       return cb(null, res) 
