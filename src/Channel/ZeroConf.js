@@ -111,11 +111,22 @@ async function main () {
     return res
   }
 
+  let _rateTimer = 300000
+  let _lastRate = null
+  async function getRates(){
+    if(_lastRate) return _lastRate
+    setTimeout(() => {
+      _lastRate = null
+    }, _rateTimer)
+    _lastRate = await exchangeRate.getBtcUsd()
+    return _lastRate
+  }
+
   async function pendingOrders () {
     const orders = await getOrders(ORDER_STATES.CREATED)
     console.log(`Pending orders: ${orders.length}`)
 
-    const btcUsd = await exchangeRate.getBtcUsd()
+    const btcUsd = await getRates() 
     
 
     const address = orders
