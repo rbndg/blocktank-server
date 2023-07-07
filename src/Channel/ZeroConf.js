@@ -6,6 +6,10 @@ const _ = require('lodash')
 const Order = require('../Orders/Order')
 const { ORDER_STATES } = require('../Orders/Order')
 const { zero_conf: zcConfig, db_url: dbURL, constants } = require('../../config/server.json')
+const exchangeRate = require("../util/exchange-api.js")
+const convert = require("../util/sats-convert.js")
+
+const MAX_REMOTE_ZERO_CONF = 50 
 
 async function main () {
   class ZeroConf extends Worker {
@@ -71,7 +75,7 @@ async function main () {
     })
   }
 
-  function checkPayment (payments) {
+  async function checkPayment (payments) {
 
     // Payment must be less than maximum amount    
     const isValidPayment = payments.filter((p) => p.amount_base >= zcConfig.max_amount)
@@ -110,8 +114,16 @@ async function main () {
   async function pendingOrders () {
     const orders = await getOrders(ORDER_STATES.CREATED)
     console.log(`Pending orders: ${orders.length}`)
+
+    const btcUsd = await exchangeRate.getBtcUsd()
+    
+
     const address = orders
-      .filter((tx) => tx.remote_balance === 0 )
+      .filter((tx) => {
+        const remoteBtc = convert.toBtc(tx.remote_balance)
+        const zcAmount = btcUsd.times(btcUsd).gte(MAX_REMOTE_ZERO_CONF)
+        return zcAmount
+      })
       .map((tx) => [tx.btc_address, tx.zero_conf_satvbyte] )
       .filter(Boolean)
     const mempoolTx = await zcWorker._getMempoolTx({ address })
