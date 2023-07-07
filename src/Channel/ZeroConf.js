@@ -75,7 +75,7 @@ async function main () {
     })
   }
 
-  async function checkPayment (payments) {
+  function checkPayment (payments) {
 
     // Payment must be less than maximum amount    
     const isValidPayment = payments.filter((p) => p.amount_base >= zcConfig.max_amount)
