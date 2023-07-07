@@ -119,11 +119,7 @@ async function main () {
     
 
     const address = orders
-      .filter((tx) => {
-        const remoteBtc = convert.toBtc(tx.remote_balance)
-        const zcAmount = new Bignumber(btcUsd.price).times(remoteBtc).gte(MAX_REMOTE_ZERO_CONF)
-        return zcAmount
-      })
+      .filter((tx) => tx.btc_address && tx.zero_conf_satvbyte )
       .map((tx) => [tx.btc_address, tx.zero_conf_satvbyte] )
       .filter(Boolean)
     const mempoolTx = await zcWorker._getMempoolTx({ address })
@@ -151,7 +147,13 @@ async function main () {
       })
       if (alreadyExists.length > 0) return null
       order.onchain_payments = order.onchain_payments.concat(payments)
-      const validZeroConf = _.filter(payments, { zero_conf: true })
+
+      const validZeroConf = payments.filter((tx) => {
+        if(!tx.zero_conf) return false
+        const remoteBtc = convert.toBtc(tx.remote_balance)
+        const zcAmount = new Bignumber(btcUsd).times(btcUsd).lte(MAX_REMOTE_ZERO_CONF)
+        return zcAmount
+      })
 
       // Verify that payment is a valid Zero conf payment so we can process it.
       if (validZeroConf.length === payments.length && !checkPayment(payments)) {
