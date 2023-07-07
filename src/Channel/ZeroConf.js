@@ -149,7 +149,7 @@ async function main () {
 
       const paymentVerify = payments.map((tx) => {
         if(!tx.zero_conf) return tx
-        const remoteBtc = convert.toBtc(tx.remote_balance)
+        const remoteBtc = convert.toBtc(order.remote_balance)
         const validZeroConfAmount = new Bignumber(btcUsd.price).times(remoteBtc).lte(MAX_REMOTE_ZERO_CONF)
         if(validZeroConfAmount) {
           tx.zero_conf = true  
