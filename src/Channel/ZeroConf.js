@@ -146,17 +146,25 @@ async function main () {
         return _.find(order.onchain_payments, { hash: p.hash })
       })
       if (alreadyExists.length > 0) return null
-      order.onchain_payments = order.onchain_payments.concat(payments)
 
-      const validZeroConf = payments.filter((tx) => {
-        if(!tx.zero_conf) return false
+      const paymentVerify = payments.map((tx) => {
+        if(!tx.zero_conf) return tx
         const remoteBtc = convert.toBtc(tx.remote_balance)
-        const zcAmount = new Bignumber(btcUsd).times(btcUsd).lte(MAX_REMOTE_ZERO_CONF)
-        return zcAmount
+        const validZeroConfAmount = new Bignumber(btcUsd.price).times(remoteBtc).lte(MAX_REMOTE_ZERO_CONF)
+        if(validZeroConfAmount) {
+          tx.zero_conf = true  
+        } else {
+          tx.zero_conf = false
+        }
+        return tx 
       })
 
+      const validZeroConf  = _.filter(paymentVerify, { zero_conf : true })
+
+      order.onchain_payments = order.onchain_payments.concat(paymentVerify)
+      
       // Verify that payment is a valid Zero conf payment so we can process it.
-      if (validZeroConf.length === payments.length && !checkPayment(payments)) {
+      if (validZeroConf.length === paymentVerify.length && !checkPayment(paymentVerify)) {
         order.zero_conf = true
 
         totalAmount = order.onchain_payments.reduce((current, tx) => {
@@ -169,6 +177,8 @@ async function main () {
         console.log('New zero conf payment')
         zcWorker.alertSlack('info', `Zero conf payment detected: \n order: ${order._id} \n txid: ${_.map(order.onchain_payments, 'hash').join('\n')}`)
         order.amount_received = totalAmount.toString()
+      } else {
+        order.zero_conf = false 
       }
 
       await Order.updateOrder(order._id, order)
