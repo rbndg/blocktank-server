@@ -121,7 +121,7 @@ async function main () {
     const address = orders
       .filter((tx) => {
         const remoteBtc = convert.toBtc(tx.remote_balance)
-        const zcAmount = btcUsd.times(btcUsd).gte(MAX_REMOTE_ZERO_CONF)
+        const zcAmount = new Bignumber(btcUsd).times(btcUsd).gte(MAX_REMOTE_ZERO_CONF)
         return zcAmount
       })
       .map((tx) => [tx.btc_address, tx.zero_conf_satvbyte] )
