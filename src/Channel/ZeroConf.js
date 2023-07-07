@@ -9,7 +9,6 @@ const { zero_conf: zcConfig, db_url: dbURL, constants } = require('../../config/
 const exchangeRate = require("../util/exchange-api.js")
 const convert = require("../util/sats-convert.js")
 
-const MAX_REMOTE_ZERO_CONF = 50 
 
 async function main () {
   class ZeroConf extends Worker {
@@ -161,7 +160,7 @@ async function main () {
       const paymentVerify = payments.map((tx) => {
         if(!tx.zero_conf) return tx
         const remoteBtc = convert.toBtc(order.remote_balance)
-        const validZeroConfAmount = new Bignumber(btcUsd.price).times(remoteBtc).lte(MAX_REMOTE_ZERO_CONF)
+        const validZeroConfAmount = new Bignumber(btcUsd.price).times(remoteBtc).lte(zcConfig.max_usd_remote)
         if(validZeroConfAmount) {
           tx.zero_conf = true  
         } else {

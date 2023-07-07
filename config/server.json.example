@@ -21,7 +21,8 @@
     "max_orders": 10,
     "max_total_amount": 500000000,
     "quote_expiry": 1000,
-    "mempool_timer": 5000
+    "mempool_timer": 5000,
+    "max_usd_remote" : 100
   },
   "public_uri": "http://localhost:4000",
   "node_whitelist": [],
